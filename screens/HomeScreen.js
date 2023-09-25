@@ -1,19 +1,21 @@
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View,Image, ScrollView, ImageBackground, useWindowDimensions } from 'react-native';
 
 export default function App() {
+  const { width:windowWidth, height:windowHeight}= useWindowDimensions();
   return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
+        <ScrollView >
+        <StatusBar style="light" />
+        <View style={{width:windowHeight,height:windowHeight}}>
+        <ImageBackground blurRadius={20} source={require('../assets/night2.jpg')} style={{flex:1}}/>
+        </View>
+        </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
     alignItems: 'center',
     justifyContent: 'center',
   },
