@@ -3,7 +3,8 @@ import { apiKey } from "../constants";
 const forecastEndpoint = (params) =>
   `https://api.weatherapi.com/v1/forecast.json?key=${apiKey}&q=${params.cityName}&days=${params.days}`;
 const locationsEndpoint = (params) =>
-  `https://api.weatherapi.com/v1/search.json?key=${apiKey}&q=${params.cityName}`;
+  `https://api.weatherapi.com/v1/current.json?key=${apiKey}&q=${params.cityName}&aqi=no`;
+  // https://api.weatherapi.com/v1/current.json?key=970c4547e9644675851205201232509&q=casablanca&aqi=no
 
 const apiCall = async (endpoint) => {
   try {
@@ -16,7 +17,6 @@ const apiCall = async (endpoint) => {
     }
 
     const data = await response.json();
-    console.log("response", data);
     return data;
   } catch (error) {
     console.log('error: ', error);
@@ -26,6 +26,7 @@ const apiCall = async (endpoint) => {
 
 export const fetchWeatherForecast = (params) => {
   let forecastUrl = forecastEndpoint(params);
+
   return apiCall(forecastUrl);
 };
 
