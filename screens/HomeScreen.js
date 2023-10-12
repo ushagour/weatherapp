@@ -1,5 +1,5 @@
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Image,View,Text, ScrollView, ImageBackground, useWindowDimensions,TouchableOpacity } from 'react-native';
+import { StyleSheet, Image,View,Text, ScrollView, ImageBackground, useWindowDimensions,TouchableOpacity,TextInput,Button } from 'react-native';
 import {fetchLocations,fetchWeatherForecast} from '../API/weather'
 import React, { useCallback, useEffect, useState } from 'react'
 import * as Font from 'expo-font';
@@ -18,28 +18,22 @@ export default function App() {
   const [bgImg, setbgImg] = useState(require("../assets/night2.jpg"));
 
 const handel_format_date=date=>{
-  console.log(date);
   Moment.locale('en');
-
   return Moment(date).format('MMMM Do, YYYY H:mma')//basically you can do all sorts of the formatting and others
 } 
   
-  const handelSerchCity =name=>{
-    if (name!='') {
-      fetchLocations({'cityName':name})
-
-    } else {
-      console.log('please fil the inputr text');
-      
+  const handelSerchCity= ()=>{
+    if(search && search.length>2){
+      fetchLocations({cityName: search}).then(data=>{
+        setData(data);
+      })
     }
+
 
   }
 
 
-  // if(search && search.length>2)
-  // fetchLocations({cityName: search}).then(data=>{
-  //   // console.log('got locations: ',data);
-  // })
+ 
 
   useEffect(() => {
     // Fetch data when the component mounts
@@ -105,6 +99,16 @@ const handel_format_date=date=>{
            backgroundColor: 'rgba(0,0,0,0.3)',
            padding: 20,
          }}>
+
+
+          <View style={styles.SearchWrapper}>
+          <TextInput style={styles.input} placeholder="Location"  placeholderTextColor="grey"  value={search} onChangeText={text=>setSearch(text)}/>
+          <TouchableOpacity onPress={handelSerchCity}>
+            <View style={styles.addWrapper}>
+            <Text style={styles.TextAdd}>+</Text>
+            </View>
+        </TouchableOpacity>
+          </View>
          <View style={styles.topInfoWrapper}>
            <View>        
               <Text style={styles.city}>{data.location.name}</Text>
@@ -204,10 +208,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  serchcontainer: {
+  SearchWrapper: {
+    flexDirection:'row',
+    marginTop: 30,
+    justifyContent:'space-around',
+    alignItems:"center",
     
-    borderRadius: 100, // Rounded full, you can adjust the value as needed
-    // Add any other styles you need here
   },topInfoWrapper: {
     flex: 1,
     marginTop: 160,
@@ -257,12 +263,31 @@ const styles = StyleSheet.create({
   }, infoText: {
     color: 'white',
     fontSize: 14,
-    fontFamily: 'Lato-Regular',
+    // fontFamily: 'Lato-Regular',
     fontWeight: 'bold',
   },bottomInfoWrapper: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     marginVertical: 20,
   },
+input:{
+    paddingVertical:15,
+    paddingHorizontal:15,
+    width:250,
+    backgroundColor:"#fff",
+    borderRadius:60,
+    borderColor:"#C0C0C0",
+    borderWidth:1,
+  },addWrapper:{
+    height:50,
+    width:50,
+    borderRadius:60,
+    backgroundColor:"#fff",
+    justifyContent:"center",
+    alignItems:"center",
+    borderColor:"#C0C0C0",
+    borderWidth:1,
+  },
+  TextAdd:{},
   
 });
