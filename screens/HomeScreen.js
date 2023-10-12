@@ -1,7 +1,9 @@
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, TextInput,View,Text, ScrollView, ImageBackground, useWindowDimensions,TouchableOpacity } from 'react-native';
+import { StyleSheet, Image,View,Text, ScrollView, ImageBackground, useWindowDimensions,TouchableOpacity } from 'react-native';
 import {fetchLocations,fetchWeatherForecast} from '../API/weather'
 import React, { useCallback, useEffect, useState } from 'react'
+import * as Font from 'expo-font';
+import Moment from 'moment';
 
 export default function App() {
   const { width:windowWidth, height:windowHeight}= useWindowDimensions();
@@ -15,8 +17,12 @@ export default function App() {
   // weather info 
   const [bgImg, setbgImg] = useState(require("../assets/night2.jpg"));
 
+const handel_format_date=date=>{
+  console.log(date);
+  Moment.locale('en');
 
-
+  return Moment(date).format('MMMM Do, YYYY H:mma')//basically you can do all sorts of the formatting and others
+} 
   
   const handelSerchCity =name=>{
     if (name!='') {
@@ -37,10 +43,11 @@ export default function App() {
 
   useEffect(() => {
     // Fetch data when the component mounts
-    fetchLocations({ cityName: 'rabat' }) // Change 'rabat' to the city you want
+    fetchLocations({ cityName: 'Madrid' }) // Change 'rabat' to the city you want
       .then((res) => {
         setData(res);
         handelBackgroundImage(res.current.condition.text);
+        // console.log(data.current.condition.icon);
       })
       .catch((err) => {
         setError(err);
@@ -73,29 +80,120 @@ export default function App() {
 
     <>
     <StatusBar style="light" />
+
+
     <ScrollView horizontal pagingEnabled>
-      <View style={{ width: windowWidth, height: windowHeight }}>
-        <ImageBackground blurRadius={20} source={bgImg} style={{ flex: 1, }} />
-      </View>
-      <View
-        style={{
-          flex: 1,
-          backgroundColor: 'rgba(0,0,0,0.3)',
-          padding: 20,
-        
-        }}
-      >
-        <View style={styles.topInfoWrapper}>
-          {data && (
+   
+   
+      
+
+
+   <View style={{width: windowWidth, height: windowHeight}}>
+   {data && (
             <>
+
+     <ImageBackground
+       source={bgImg}
+       blurRadius={5} 
+
+       style={{
+         flex: 1,
+       }}>
+       <View
+         style={{
+           flex: 1,
+           backgroundColor: 'rgba(0,0,0,0.3)',
+           padding: 20,
+         }}>
+         <View style={styles.topInfoWrapper}>
+           <View>        
               <Text style={styles.city}>{data.location.name}</Text>
-              <Text style={styles.temparature}>{data.current.temp_c}°C</Text>
-              <Text style={styles.weatherType}>{data.current.condition.text}</Text>
-            </>
+              
+              <Text style={styles.time}>{handel_format_date(data.location.localtime)}</Text>
+      
+           </View>
+           <View>
+          
+           <Text style={styles.temparature}>{data.current.temp_c}°C</Text>
+            
+             <View style={{flexDirection: 'row'}}>
+            
+              <Image source={{uri:"https:"+data.current.condition.icon,width:50,height:50 }}/>
+        
+               <Text style={styles.weatherType}>{data.current.condition.text}</Text>
+          
+             </View>
+           </View>
+         </View>
+         <View
+           style={{
+             borderBottomColor: 'rgba(255,255,255,0.7)',
+             marginTop: 20,
+             borderBottomWidth: 1,
+           }}
+         />
+         <View style={styles.bottomInfoWrapper}>
+           <View style={{alignItems: 'center'}}>
+             <Text style={styles.infoText}>Wind</Text>
+             <Text style={[styles.infoText, {fontSize: 24}]}>
+              {data.current.wind_degree  }
+             </Text>
+             <Text style={styles.infoText}>km/h</Text>
+             <View style={styles.infoBar}>
+                 
+               <View
+                 style={{
+                   width: data.current.wind_kph /2,
+                   height: 5,
+                   backgroundColor: '#69F0AE',
+                 }}
+               />
+                  
+             </View>
+           </View>
+           <View style={{alignItems: 'center'}}>
+             <Text style={styles.infoText}>Rain</Text>
+             <Text style={[styles.infoText, {fontSize: 24}]}>
+               {data.current.precip_in}
+             </Text>
+             <Text style={styles.infoText}>%</Text>
+             <View style={styles.infoBar}>
+               <View
+                 style={{
+                   width: data.current.precip_in / 2,
+                   height: 5,
+                   backgroundColor: '#F44336',
+                 }}
+               />
+             </View>
+           </View>
+           <View style={{alignItems: 'center'}}>
+             <Text style={styles.infoText}>Humidity</Text>
+             <Text style={[styles.infoText, {fontSize: 24}]}>
+               {data.current.humidity}
+             </Text>
+             <Text style={styles.infoText}>%</Text>
+             <View style={styles.infoBar}>
+               <View
+                 style={{
+                   width: data.current.humidity / 2,
+                   height: 5,
+                   backgroundColor: '#F44336',
+                 }}
+               />
+             </View>
+           </View>
+         </View>
+       </View>
+     </ImageBackground>
+          </>
           )}
-        </View>
-      </View>
-    </ScrollView>
+   </View>
+ 
+
+</ScrollView>
+
+
   </>
   );
 }
@@ -136,7 +234,35 @@ const styles = StyleSheet.create({
     // fontFamily: 'Lato-Regular',
     fontWeight: 'bold',
     fontSize: 25,
-    lineHeight: 34,
-    marginLeft: 10,
+    lineHeight: 30,
+  },infoBar: {
+    width: 45,
+    height: 5,
+    backgroundColor: 'rgba(255, 255, 255, 0.5)',
   },
+  indicatorWrapper: {
+    position: 'absolute',
+    top: 140,
+    left: 20,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  normalDot: {
+    height: 5,
+    width: 5,
+    borderRadius: 4,
+    marginHorizontal: 4,
+    backgroundColor: '#fff',
+  }, infoText: {
+    color: 'white',
+    fontSize: 14,
+    fontFamily: 'Lato-Regular',
+    fontWeight: 'bold',
+  },bottomInfoWrapper: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginVertical: 20,
+  },
+  
 });
