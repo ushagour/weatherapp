@@ -12,10 +12,12 @@ export default function App() {
   const [isLoading, setIsLoading] = useState(false);
   const [data, setData] = useState(null);
   const [error, setError] = useState(null);
+    const [loading, setLoading] = useState(true); // Loading state
+
 
 
   // weather info 
-  const [bgImg, setbgImg] = useState(require("../assets/night2.jpg"));
+  const [bgImg, setbgImg] = useState(null);
 
 const handel_format_date=date=>{
   Moment.locale('en');
@@ -23,10 +25,12 @@ const handel_format_date=date=>{
 } 
   
   const handelSerchCity= ()=>{
+    setData(null);
     if(search && search.length>2){
-      fetchLocations({cityName: search}).then(data=>{
-        setData(data);
-      })
+
+      fetchLocations({cityName: search}).then(res=>{setData(res);  handelBackgroundImage(res)})
+      .catch((err) => {console.log(err);
+      });
     }
 
 
@@ -35,35 +39,40 @@ const handel_format_date=date=>{
 
  
 
+
   useEffect(() => {
     // Fetch data when the component mounts
-    fetchLocations({ cityName: 'Madrid' }) // Change 'rabat' to the city you want
-      .then((res) => {
+    fetchLocations({ cityName: 'Madrid' }) // Change 'Madrid' to the city you want
+      .then(res => {
+        console.log(res);
         setData(res);
-        handelBackgroundImage(res.current.condition.text);
-        // console.log(data.current.condition.icon);
+        setLoading(false); // Set loading state to false after data is fetched
+        handelBackgroundImage(res);
       })
       .catch((err) => {
-        setError(err);
+        console.log(err);
+        setLoading(false); // Handle any errors and set loading state to false
       });
-  }, []);
+  }, []); // Empty dependency array to run on initial component mount
+
     // fetchWeatherForecast({'cityName':'Rabat','days':3})
-    // console.log(data.current.cloud);
+    
 
-   const handelBackgroundImage =(state)=>{
+   const handelBackgroundImage =(res)=>{
+// console.log("in");
+    let state= res.current.condition.text;
+    console.log("--data"+state);
 
-     switch (state) {
-       case 'Partly cloudy':
-        setbgImg(require("../assets/night2.jpg"));
+    let text = state.split(" ");
 
-        break;
-      case 'Sunny':
+      if (text.includes('cloudy')) {
+        setbgImg(require("../assets/cloudy.jpeg"));
+      } else if (text.includes('Sunny')) {
         setbgImg(require("../assets/sunny.jpg"));
-        
-        break;
-        
-        
-      
+      } else if (text.includes('Rain')) {
+        setbgImg(require("../assets/rainy.jpg"));
+      } else {
+        setbgImg(require("../assets/night2.jpg"));
       }
       
 
@@ -102,7 +111,7 @@ const handel_format_date=date=>{
 
 
           <View style={styles.SearchWrapper}>
-          <TextInput style={styles.input} placeholder="Location"  placeholderTextColor="grey"  value={search} onChangeText={text=>setSearch(text)}/>
+          <TextInput style={styles.input} placeholder="Location"  placeholderTextColor="white"  value={search} onChangeText={text=>setSearch(text)}/>
           <TouchableOpacity onPress={handelSerchCity}>
             <View style={styles.addWrapper}>
             <Text style={styles.TextAdd}>+</Text>
@@ -209,6 +218,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   SearchWrapper: {
+    backgroundColor: 'rgba(0,0,0,0)',
     flexDirection:'row',
     marginTop: 30,
     justifyContent:'space-around',
@@ -274,7 +284,8 @@ input:{
     paddingVertical:15,
     paddingHorizontal:15,
     width:250,
-    backgroundColor:"#fff",
+    backgroundColor: 'rgba(0,0,0,0.3)', // 40% opaque
+    color: 'white',
     borderRadius:60,
     borderColor:"#C0C0C0",
     borderWidth:1,
@@ -282,12 +293,14 @@ input:{
     height:50,
     width:50,
     borderRadius:60,
-    backgroundColor:"#fff",
+    backgroundColor: 'rgba(0,0,0,0.3)', // 40% opaque
     justifyContent:"center",
     alignItems:"center",
     borderColor:"#C0C0C0",
     borderWidth:1,
   },
-  TextAdd:{},
+  TextAdd:{
+  
+  },
   
 });
