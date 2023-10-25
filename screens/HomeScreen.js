@@ -2,8 +2,8 @@ import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Image,View,Text, ScrollView, ImageBackground, useWindowDimensions,TouchableOpacity,TextInput,Button } from 'react-native';
 import {fetchLocations,fetchWeatherForecast} from '../API/weather'
 import React, { useCallback, useEffect, useState } from 'react'
-import * as Font from 'expo-font';
 import Moment from 'moment';
+import {GetCurrentLocation} from '../API/LocationApi';
 
 export default function App() {
   const { width:windowWidth, height:windowHeight}= useWindowDimensions();
@@ -12,7 +12,17 @@ export default function App() {
   const [isLoading, setIsLoading] = useState(false);
   const [data, setData] = useState(null);
   const [error, setError] = useState(null);
-    const [loading, setLoading] = useState(true); // Loading state
+  const [loading, setLoading] = useState(true); // Loading state
+
+//get user location 
+
+ 
+
+
+  // -------------------------------
+
+
+
 
 
 
@@ -41,6 +51,7 @@ const handel_format_date=date=>{
 
 
   useEffect(() => {
+    GetCurrentLocation().then(locationData=>{console.log(locationData);})
     // Fetch data when the component mounts
     fetchLocations({ cityName: 'Madrid' }) // Change 'Madrid' to the city you want
       .then(res => {
