@@ -1,6 +1,6 @@
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Image,View,Text, ScrollView, ImageBackground, useWindowDimensions,TouchableOpacity,TextInput,Button } from 'react-native';
-import {fetchLocations,fetchWeatherForecast} from '../API/weather'
+import { StyleSheet, Image,View,Text, ScrollView, ImageBackground, useWindowDimensions,TouchableOpacity,TextInput,Button,ActivityIndicator} from 'react-native';
+import {fetchWeatherForecast,fetchLocationsCity,fetchLocationsCordins} from '../API/weather'
 import React, { useCallback, useEffect, useState } from 'react'
 import Moment from 'moment';
 import {GetCurrentLocation} from '../API/LocationApi';
@@ -9,7 +9,6 @@ export default function App() {
   const { width:windowWidth, height:windowHeight}= useWindowDimensions();
   const [search, setSearch] = useState(null);
   
-  const [isLoading, setIsLoading] = useState(false);
   const [data, setData] = useState(null);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true); // Loading state
@@ -38,8 +37,10 @@ const handel_format_date=date=>{
     setData(null);
     if(search && search.length>2){
 
-      fetchLocations({cityName: search}).then(res=>{setData(res);  handelBackgroundImage(res)})
-      .catch((err) => {console.log(err);
+      fetchLocationsCity({cityName: search}).then(res=>{setData(res);  handelBackgroundImage(res);  setLoading(false);})
+      .catch((err) => {
+        
+        console.log(err);
       });
     }
 
@@ -51,22 +52,34 @@ const handel_format_date=date=>{
 
 
   useEffect(() => {
-    GetCurrentLocation().then(locationData=>{console.log(locationData);})
-    // Fetch data when the component mounts
-    fetchLocations({ cityName: 'Madrid' }) // Change 'Madrid' to the city you want
+    GetCurrentLocation().then(locationData=>{
+      
+      
+      let cords=[locationData.coords.latitude,locationData.coords.longitude];
+   
+      
+      fetchLocationsCordins({ coordinates: cords }) // Change 'Madrid' to the city you want
       .then(res => {
         console.log(res);
         setData(res);
-        setLoading(false); // Set loading state to false after data is fetched
         handelBackgroundImage(res);
+        setLoading(false); // Set loading state to false after data is fetched
       })
       .catch((err) => {
-        console.log(err);
+        // console.log(err);
+        alert(err)
         setLoading(false); // Handle any errors and set loading state to false
       });
-  }, []); // Empty dependency array to run on initial component mount
-
-    // fetchWeatherForecast({'cityName':'Rabat','days':3})
+      
+      
+      
+      
+      
+      
+      
+    })
+ 
+  }, []); 
     
 
    const handelBackgroundImage =(res)=>{
@@ -94,15 +107,22 @@ const handel_format_date=date=>{
 
     <>
     <StatusBar style="light" />
+    {loading ? ( 
+  <View style={{ flex: 1, justifyContent: "center"}}>
 
+    <ActivityIndicator  size="large"  color="grey" />
+  </View>
+      ) : (
 
     <ScrollView horizontal pagingEnabled>
    
    
-      
 
 
    <View style={{width: windowWidth, height: windowHeight}}>
+
+
+    
    {data && (
             <>
 
@@ -160,7 +180,7 @@ const handel_format_date=date=>{
            <View style={{alignItems: 'center'}}>
              <Text style={styles.infoText}>Wind</Text>
              <Text style={[styles.infoText, {fontSize: 24}]}>
-              {data.current.wind_degree  }
+              {data.current.wind_kph  }
              </Text>
              <Text style={styles.infoText}>km/h</Text>
              <View style={styles.infoBar}>
@@ -213,10 +233,10 @@ const handel_format_date=date=>{
           </>
           )}
    </View>
- 
+
 
 </ScrollView>
-
+      )}
 
   </>
   );
