@@ -4,6 +4,7 @@ import {fetchWeatherForecast,fetchLocationsCity,fetchLocationsCordins} from '../
 import React, { useCallback, useEffect, useState } from 'react'
 import Moment from 'moment';
 import {GetCurrentLocation} from '../API/LocationApi';
+import * as Font from 'expo-font';
 
 export default function App() {
   const { width:windowWidth, height:windowHeight}= useWindowDimensions();
@@ -52,6 +53,15 @@ const handel_format_date=date=>{
 
 
   useEffect(() => {
+    async function loadFonts() {
+      await Font.loadAsync({
+        'Lato-Regular': require('../assets/fonts/Lato-Regular.ttf'),
+        'Lato-Light': require('../assets/fonts/Lato-Light.ttf')
+        // Add more font definitions as needed
+      });
+    }
+    loadFonts();
+
     GetCurrentLocation().then(locationData=>{
       
       
@@ -60,7 +70,6 @@ const handel_format_date=date=>{
       
       fetchLocationsCordins({ coordinates: cords }) // Change 'Madrid' to the city you want
       .then(res => {
-        console.log(res);
         setData(res);
         handelBackgroundImage(res);
         setLoading(false); // Set loading state to false after data is fetched
@@ -70,11 +79,6 @@ const handel_format_date=date=>{
         alert(err)
         setLoading(false); // Handle any errors and set loading state to false
       });
-      
-      
-      
-      
-      
       
       
     })
@@ -263,22 +267,22 @@ const styles = StyleSheet.create({
   city: {
     color: '#fff',
     fontSize: 30,
-    // fontFamily: 'Lato-Regular',
+    fontFamily: 'Lato-Regular',
     fontWeight: 'bold',
   },
   time: {
     color: '#fff',
-    // fontFamily: 'Lato-Regular',
+    fontFamily: 'Lato-Regular',
     fontWeight: 'bold',
   },
   temparature: {
     color: '#fff',
-    // fontFamily: 'Lato-Light',
+    fontFamily: 'Lato-Light',
     fontSize: 85,
   },
   weatherType: {
     color: '#fff',
-    // fontFamily: 'Lato-Regular',
+    fontFamily: 'Lato-Regular',
     fontWeight: 'bold',
     fontSize: 25,
     lineHeight: 30,
@@ -304,7 +308,7 @@ const styles = StyleSheet.create({
   }, infoText: {
     color: 'white',
     fontSize: 14,
-    // fontFamily: 'Lato-Regular',
+    fontFamily: 'Lato-Regular',
     fontWeight: 'bold',
   },bottomInfoWrapper: {
     flexDirection: 'row',
