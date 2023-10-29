@@ -87,17 +87,16 @@ const handel_format_date=date=>{
     
 
    const handelBackgroundImage =(res)=>{
-// console.log("in");
     let state= res.current.condition.text;
-    console.log("--data"+state);
+    let stateUper = state.toUpperCase(state); 
 
-    let text = state.split(" ");
+    let text = stateUper.split(" ");
 
-      if (text.includes('cloudy')) {
+      if (text.includes('CLOUDY')) {
         setbgImg(require("../assets/cloudy.jpeg"));
-      } else if (text.includes('Sunny')) {
+      } else if (text.includes('SUNNY')) {
         setbgImg(require("../assets/sunny.jpg"));
-      } else if (text.includes('Rain')) {
+      } else if (text.includes('RAIN')) {
         setbgImg(require("../assets/rainy.jpg"));
       } else {
         setbgImg(require("../assets/night2.jpg"));
