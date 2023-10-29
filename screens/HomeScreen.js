@@ -5,6 +5,8 @@ import React, { useCallback, useEffect, useState } from 'react'
 import Moment from 'moment';
 import {GetCurrentLocation} from '../API/LocationApi';
 import * as Font from 'expo-font';
+import { EvilIcons } from '@expo/vector-icons'; 
+
 
 export default function App() {
   const { width:windowWidth, height:windowHeight}= useWindowDimensions();
@@ -13,18 +15,6 @@ export default function App() {
   const [data, setData] = useState(null);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true); // Loading state
-
-//get user location 
-
- 
-
-
-  // -------------------------------
-
-
-
-
-
 
   // weather info 
   const [bgImg, setbgImg] = useState(null);
@@ -38,7 +28,7 @@ const handel_format_date=date=>{
     setData(null);
     if(search && search.length>2){
 
-      fetchLocationsCity({cityName: search}).then(res=>{setData(res);  handelBackgroundImage(res);  setLoading(false);})
+      fetchLocationsCity({cityName: search}).then(res=>{setData(res);  handelBackgroundImage(res); setSearch(" "); setLoading(false);})
       .catch((err) => {
         
         console.log(err);
@@ -56,7 +46,8 @@ const handel_format_date=date=>{
     async function loadFonts() {
       await Font.loadAsync({
         'Lato-Regular': require('../assets/fonts/Lato-Regular.ttf'),
-        'Lato-Light': require('../assets/fonts/Lato-Light.ttf')
+        'Lato-Light': require('../assets/fonts/Lato-Light.ttf'),
+        'Lato-Italic': require('../assets/fonts/Lato-Italic.ttf')
         // Add more font definitions as needed
       });
     }
@@ -144,17 +135,19 @@ const handel_format_date=date=>{
          }}>
 
 
+
           <View style={styles.SearchWrapper}>
           <TextInput style={styles.input} placeholder="Location"  placeholderTextColor="white"  value={search} onChangeText={text=>setSearch(text)}/>
           <TouchableOpacity onPress={handelSerchCity}>
             <View style={styles.addWrapper}>
-            <Text style={styles.TextAdd}>+</Text>
+            <EvilIcons  style={styles.TextAdd} name="search" size={25}  />
             </View>
         </TouchableOpacity>
           </View>
          <View style={styles.topInfoWrapper}>
            <View>        
-              <Text style={styles.city}>{data.location.name}</Text>
+              <Text style={styles.city}>{data.location.name} <Text style={styles.country}>-{data.location.country}</Text></Text>
+              
               
               <Text style={styles.time}>{handel_format_date(data.location.localtime)}</Text>
       
@@ -265,9 +258,14 @@ const styles = StyleSheet.create({
   },
   city: {
     color: '#fff',
-    fontSize: 30,
+    fontSize: 40,
     fontFamily: 'Lato-Regular',
     fontWeight: 'bold',
+  },
+  country: {
+    color: '#fff',
+    fontSize: 18,
+    fontFamily: 'Lato-Italic',
   },
   time: {
     color: '#fff',
@@ -334,7 +332,7 @@ input:{
     borderWidth:1,
   },
   TextAdd:{
-  
+    color: 'white',
   },
   
 });
