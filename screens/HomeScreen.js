@@ -1,16 +1,15 @@
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Image,View,Text, ScrollView, ImageBackground, useWindowDimensions,TouchableOpacity,TextInput,Button,ActivityIndicator} from 'react-native';
+import { StyleSheet, Image,View,Text, ScrollView, ImageBackground, useWindowDimensions,TextInput,Button,ActivityIndicator} from 'react-native';
 import {fetchWeatherForecast,fetchLocationsCity,fetchLocationsCordins} from '../API/weather'
 import React, { useCallback, useEffect, useState } from 'react'
 import Moment from 'moment';
 import {GetCurrentLocation} from '../API/LocationApi';
 import * as Font from 'expo-font';
-import { EvilIcons } from '@expo/vector-icons'; 
+import Autocomplete from '../components/Autocomplete';
 
 
 export default function App() {
   const { width:windowWidth, height:windowHeight}= useWindowDimensions();
-  const [search, setSearch] = useState(null);
   
   const [data, setData] = useState(null);
   const [error, setError] = useState(null);
@@ -24,19 +23,7 @@ const handel_format_date=date=>{
   return Moment(date).format('MMMM Do, YYYY H:mma')//basically you can do all sorts of the formatting and others
 } 
   
-  const handelSerchCity= ()=>{
-    setData(null);
-    if(search && search.length>2){
 
-      fetchLocationsCity({cityName: search}).then(res=>{setData(res);  handelBackgroundImage(res); setSearch(" "); setLoading(false);})
-      .catch((err) => {
-        
-        console.log(err);
-      });
-    }
-
-
-  }
 
 
  
@@ -89,7 +76,9 @@ const handel_format_date=date=>{
         setbgImg(require("../assets/sunny.jpg"));
       } else if (text.includes('RAIN')) {
         setbgImg(require("../assets/rainy.jpg"));
-      } else {
+      } else if (text.includes('MIST')||text.includes('FOG')){
+        setbgImg(require("../assets/mist.jpg"));
+      }else{
         setbgImg(require("../assets/night2.jpg"));
       }
       
@@ -134,16 +123,9 @@ const handel_format_date=date=>{
            padding: 20,
          }}>
 
+         <Autocomplete  backgroundColorFu={handelBackgroundImage} setdata={setData} setLoading={setLoading}/>
 
-
-          <View style={styles.SearchWrapper}>
-          <TextInput style={styles.input} placeholder="Location"  placeholderTextColor="white"  value={search} onChangeText={text=>setSearch(text)}/>
-          <TouchableOpacity onPress={handelSerchCity}>
-            <View style={styles.addWrapper}>
-            <EvilIcons  style={styles.TextAdd} name="search" size={25}  />
-            </View>
-        </TouchableOpacity>
-          </View>
+        
          <View style={styles.topInfoWrapper}>
            <View>        
               <Text style={styles.city}>{data.location.name} <Text style={styles.country}>-{data.location.country}</Text></Text>
@@ -216,7 +198,7 @@ const handel_format_date=date=>{
              <View style={styles.infoBar}>
                <View
                  style={{
-                   width: data.current.humidity / 2,
+                   width: (data.current.humidity /2),
                    height: 5,
                    backgroundColor: '#F44336',
                  }}
@@ -243,14 +225,6 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  SearchWrapper: {
-    backgroundColor: 'rgba(0,0,0,0)',
-    flexDirection:'row',
-    marginTop: 30,
-    justifyContent:'space-around',
-    alignItems:"center",
-    
   },topInfoWrapper: {
     flex: 1,
     marginTop: 160,
@@ -312,27 +286,6 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     marginVertical: 20,
   },
-input:{
-    paddingVertical:15,
-    paddingHorizontal:15,
-    width:250,
-    backgroundColor: 'rgba(0,0,0,0.3)', // 40% opaque
-    color: 'white',
-    borderRadius:60,
-    borderColor:"#C0C0C0",
-    borderWidth:1,
-  },addWrapper:{
-    height:50,
-    width:50,
-    borderRadius:60,
-    backgroundColor: 'rgba(0,0,0,0.3)', // 40% opaque
-    justifyContent:"center",
-    alignItems:"center",
-    borderColor:"#C0C0C0",
-    borderWidth:1,
-  },
-  TextAdd:{
-    color: 'white',
-  },
+
   
 });
