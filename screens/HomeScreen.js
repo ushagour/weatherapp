@@ -14,20 +14,14 @@ export default function App() {
   const [data, setData] = useState(null);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true); // Loading state
-
   // weather info 
   const [bgImg, setbgImg] = useState(null);
 
 const handel_format_date=date=>{
-  Moment.locale('en');
-  return Moment(date).format('MMMM Do, YYYY H:mma')//basically you can do all sorts of the formatting and others
+
+  return Moment(date).format('MMMM do, yyyy h:mma');//basically you can do all sorts of the formatting and others
 } 
   
-
-
-
- 
-
 
   useEffect(() => {
     async function loadFonts() {
