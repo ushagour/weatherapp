@@ -11,9 +11,18 @@
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
+    "asset": {
+      "assetBundlePatterns": ["**/*"],
+      "config": {
+        "android": {
+          "adaptiveIcon": {
+            "foregroundImage": "./assets/adaptive-icon.png",
+            "backgroundColor": "#FFFFFF"
+          }
+        }
+      }
+    },
+  
     "ios": {
       "supportsTablet": true
     },
@@ -21,10 +30,20 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.ushagour.weatherapp"
     },
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "92d58dfe-bb19-439c-9127-2b85acd1b8c4"
+      }
     }
   }
 }
+
+
+
+
